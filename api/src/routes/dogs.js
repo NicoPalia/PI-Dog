@@ -3,6 +3,23 @@ const { Temperament, Dog } = require("../db");
 const { infoApi, getDogName, getId } = require("../Controllers/index");
 const router = Router();
 
+// [ ] POST /dogs:
+// Recibe los datos recolectados desde el formulario controlado de la ruta de creación de raza de perro por body
+// Crea una raza de perro en la base de datos relacionada con sus temperamentos
+
+router.post("/", async ()=>{
+    const {name, img, weight, height, life_span, breed_group, temperaments, origin}=req.body;
+    if(!name||!weight||!height||life_span||!temperaments)return res.status(404).send("Data missing");
+
+    try {
+        const newDog = await Dog.create({name, img,weight,height,life_span,breed_group,origin});
+        await newDog.addTemperaments(temperaments)
+        res.status(201).json({message: "Dog Created!"})
+    } catch (err) {
+        return res.status(404).send("Something went wrong");
+    }
+})
+
 // [ ] GET /dogs:
 // Obtener un listado de las razas de perro
 // Debe devolver solo los datos necesarios para la ruta principal
@@ -42,9 +59,5 @@ router.get("/:id", async (req, res) => {
     res.status(400).send(err);
   }
 });
-
-// [ ] POST /dogs:
-// Recibe los datos recolectados desde el formulario controlado de la ruta de creación de raza de perro por body
-// Crea una raza de perro en la base de datos relacionada con sus temperamentos
 
 module.exports = router;
