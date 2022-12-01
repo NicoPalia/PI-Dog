@@ -1,24 +1,49 @@
 const { Router } = require("express");
 const { Temperament, Dog } = require("../db");
-const { infoApi, getDogName, getId } = require("../Controllers/index");
+const {
+  infoApi,
+  getDogName,
+  getId,
+  getAllDogs,
+} = require("../Controllers/index");
 const router = Router();
 
 // [ ] POST /dogs:
 // Recibe los datos recolectados desde el formulario controlado de la ruta de creación de raza de perro por body
 // Crea una raza de perro en la base de datos relacionada con sus temperamentos
 
-router.post("/", async ()=>{
-    const {name, img, weight, height, life_span, breed_group, temperaments, origin}=req.body;
-    if(!name||!weight||!height||life_span||!temperaments)return res.status(404).send("Data missing");
+router.post("/", async (req, res) => {
+  const {
+    name,
+    img,
+    weight,
+    height,
+    life_span,
+    breed_group,
+    temperaments,
+    origin,
+  } = req.body;
+  if (!name || !weight || !height || !life_span || !temperaments) {
+    return res.status(404).send("Data missing");
+  };
 
-    try {
-        const newDog = await Dog.create({name, img,weight,height,life_span,breed_group,origin});
-        await newDog.addTemperaments(temperaments)
-        res.status(201).json({message: "Dog Created!"})
-    } catch (err) {
-        return res.status(404).send("Something went wrong");
-    }
-})
+  try {
+    const newDog = await Dog.create({
+      name,
+      img,
+      weight,
+      height,
+      life_span,
+      breed_group,
+      origin,
+    });
+    await newDog.addTemperaments(temperaments);
+    console.log(newDog);
+    res.status(201).json({ message: "Dog Created!" });
+  } catch (err) {
+    return res.status(404).send("Something went wrong");
+  }
+});
 
 // [ ] GET /dogs:
 // Obtener un listado de las razas de perro
@@ -36,7 +61,7 @@ router.get("/", async (req, res) => {
       const dog = await getDogName(name);
       res.status(200).send(dog);
     } else {
-      const dogs = await infoApi();
+      const dogs = await getAllDogs();
       res.status(200).send(dogs);
     }
   } catch (err) {

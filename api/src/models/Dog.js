@@ -44,6 +44,6 @@ module.exports = (sequelize) => {
         primaryKey: true,
       },
     },
-    { timestamps: true, createdAt: "creado", updatedAt: false }
+    { timestamps: false, createdAt: "creado", updatedAt: false }
   );
 };
